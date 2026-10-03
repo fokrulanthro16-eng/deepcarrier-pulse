@@ -28,14 +28,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest
 
-      - name: Run Pytest Verification Suite
-        run: |
-          pytest -v tests/
-
-      - name: Execute Full Flight DSP Transceiver Pipeline
+      - name: Verify Flight DSP Engine & NASA CCSDS Telemetry
         run: |
           python deepspace_signal_engine.py
+          python -m pytest tests/ -v
 
       - name: Generate Executive Presentation Deck
         run: |

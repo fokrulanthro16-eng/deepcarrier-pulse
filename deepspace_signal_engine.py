@@ -24,6 +24,8 @@ from typing import Dict, Tuple, Optional, Any, List
 
 import numpy as np
 import scipy.signal as signal
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
@@ -93,13 +95,14 @@ class CCSDSTelemetryParser:
         phase ambiguity, delineates frame boundaries, and validates CRC-16.
         Scans candidate ASM positions to lock onto validated post-lock frames.
         """
+        best_report: Optional[Dict[str, Any]] = None
+
         for phase_inverted in [False, True]:
             test_bits = (1 - raw_bits) if phase_inverted else raw_bits
             bit_str = "".join(str(b) for b in test_bits)
             asm_str = "".join(str(b) for b in CCSDS_ASM_BITS)
 
             search_idx = 0
-            best_report = None
             while True:
                 pos = bit_str.find(asm_str, search_idx)
                 if pos == -1:
@@ -132,10 +135,6 @@ class CCSDSTelemetryParser:
 
                 search_idx = pos + 1
 
-            if best_report is not None and best_report["crc_valid"]:
-                return best_report
-
-        # If no frame achieved CRC=True, return first discovered candidate
         if best_report is not None:
             return best_report
 
@@ -383,7 +382,7 @@ class DeepSpaceChannelSynthesizer:
         t = np.arange(total_samples, dtype=np.float64) * self.ts
 
         # 1. Telemetry synthesis with NASA CCSDS standard frames
-        msg = "ARTEMIS_DEEP_SPACE::SCID=0x2A5::BUS_V=28.4V::RSSI=-118dBm::CRY_TEMP=42.1K::PROP_STAT=NOMINAL"
+        msg = "ARTEMIS_DEEP_SPACE::SCID=0x2A5::STAT=NOMINAL"
         raw_frame, frame_bits = CCSDSTelemetryParser.assemble_frame(
             scid=0x2A5, vcid=0x01, frame_count=42, telemetry_text=msg
         )

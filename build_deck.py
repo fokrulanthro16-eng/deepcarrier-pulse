@@ -4,6 +4,8 @@ Generate 4-slide executive presentation PDF for DeepCarrier-Pulse (Track 1)
 using Matplotlib PdfPages backend.
 """
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np

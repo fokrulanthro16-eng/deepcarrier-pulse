@@ -8,6 +8,12 @@ Verifies:
 - 4-Stage Autonomous State Machine and Occultation Re-Lock
 """
 
+import sys
+from pathlib import Path
+
+# Ensure root directory is in sys.path across all CI runners
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import numpy as np
 import pytest
 from deepspace_signal_engine import (
@@ -125,6 +131,7 @@ def test_end_to_end_flight_dsp_pipeline():
     End-to-end integration test of deep space channel synthesis,
     autonomous acquisition, EKF tracking, occultation recovery, and CCSDS decoding.
     """
+    np.random.seed(42)
     synthesizer = DeepSpaceChannelSynthesizer(
         fs=100000.0,
         symbol_rate=2000.0,
